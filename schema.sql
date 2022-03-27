@@ -1,0 +1,30 @@
+DROP TABLE IF EXISTS assignments;
+DROP TABLE IF EXISTS papers;
+DROP TABLE IF EXISTS sessions;
+
+CREATE TABLE IF NOT EXISTS papers (
+    id VARCHAR(128) NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL,
+    abstract TEXT NOT NULL,
+    authors JSON NOT NULL,
+    attributes JSON NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS sessions (
+    id UUID NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4 (),
+    name TEXT NOT NULL,
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
+    location VARCHAR(128),
+    chair VARCHAR(256),
+    session_group VARCHAR(256),
+    no_paper BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE IF NOT EXISTS assignments (
+    id VARCHAR(256) NOT NULL PRIMARY KEY,
+    paper_id VARCHAR(128) REFERENCES papers ON DELETE CASCADE NOT NULL,
+    session_id UUID REFERENCES sessions ON DELETE CASCADE NOT NULL,
+    minutes SMALLINT NOT NULL DEFAULT 20,
+    slot_number SMALLSERIAL NOT NULL
+);

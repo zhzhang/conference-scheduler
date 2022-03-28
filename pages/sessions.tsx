@@ -51,9 +51,6 @@ export default function SessionList({
           Add Session
         </Button>
       </Box>
-      {/* <Box sx={{ display: "flex" }}>
-        <Typography>Show</Typography>
-      </Box> */}
       <Box sx={{ height: "calc(100vh - 165px)", overflowY: "scroll", pr: 2 }}>
         <Grid container spacing={2}>
           {Object.entries(sessions).map(([id, session]) => (

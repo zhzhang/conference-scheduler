@@ -1,4 +1,3 @@
-import Initialize from "@/components/Initialize";
 import SignInDialog from "@/components/SignInDialog";
 import { useStore } from "@/lib/store";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -79,7 +78,6 @@ export default function MyApp({ Component, pageProps }) {
   const [open, setOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const user = supabase.auth.user();
-  // supabase.auth.signOut();
 
   if (props === null) {
     return (
@@ -91,10 +89,6 @@ export default function MyApp({ Component, pageProps }) {
         }}
       />
     );
-  }
-
-  if (Object.keys(props.papers).length === 0) {
-    return <Initialize />;
   }
 
   return (

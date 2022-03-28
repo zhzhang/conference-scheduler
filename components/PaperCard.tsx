@@ -72,6 +72,7 @@ export default function PaperCard({
           </Button>
           {Object.entries(attributes).map(([key, value]) => (
             <Chip
+              key={key}
               label={`${key}: ${value}`}
               variant="outlined"
               sx={{ mr: 0.5 }}

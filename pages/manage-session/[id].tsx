@@ -363,24 +363,28 @@ function ManageSession({
         chairs={chairs}
         sessionGroups={sessionGroups}
       />
-      <Typography variant="h4">Papers</Typography>
-      {orderedAssignments.map((assignment) => (
-        <PaperEntry
-          key={assignment.id}
-          assignments={assignments}
-          assignment={assignment}
-          papers={papers}
-        />
-      ))}
-      <AddPapersDialog
-        open={addPapersOpen}
-        onBlur={() => setAddPapersOpen(false)}
-        papers={papers}
-        session={session}
-        sessions={sessions}
-        paperToAssignments={paperToAssignments}
-      />
-      <Button onClick={() => setAddPapersOpen(true)}>Add Papers</Button>
+      {!session.no_paper && (
+        <>
+          <Typography variant="h4">Papers</Typography>
+          {orderedAssignments.map((assignment) => (
+            <PaperEntry
+              key={assignment.id}
+              assignments={assignments}
+              assignment={assignment}
+              papers={papers}
+            />
+          ))}
+          <AddPapersDialog
+            open={addPapersOpen}
+            onBlur={() => setAddPapersOpen(false)}
+            papers={papers}
+            session={session}
+            sessions={sessions}
+            paperToAssignments={paperToAssignments}
+          />
+          <Button onClick={() => setAddPapersOpen(true)}>Add Papers</Button>
+        </>
+      )}
     </Box>
   );
 }

@@ -1,3 +1,4 @@
+import Initialize from "@/components/Initialize";
 import PaperCard from "@/components/PaperCard";
 import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
@@ -101,6 +102,7 @@ function FilteredPapers({ papers, sessions, sessionToAssignments }) {
         >
           {papers.slice(0, limit).map((paper) => (
             <PaperCard
+              key={paper.id}
               paper={paper}
               selected={selection.includes(paper)}
               setSelection={setSelection}
@@ -126,7 +128,7 @@ const MenuProps = {
   },
 };
 
-export default function PaperList({
+function PaperList({
   papers,
   sessions,
   sessionToAssignments,
@@ -164,12 +166,10 @@ export default function PaperList({
   }
 
   return (
-    <Box sx={{ ml: 1 }}>
-      <Typography variant="h4">Papers</Typography>
-
+    <>
       {Object.entries(attributes).map(([key, values]) => (
-        <FormControl sx={{ mr: 1, width: 300 }}>
-          <InputLabel id="demo-multiple-checkbox-label">{key}</InputLabel>
+        <FormControl key={key} sx={{ mr: 1, width: 300 }}>
+          <InputLabel>{key}</InputLabel>
           <Select
             multiple
             value={attributeFilters[key] || []}
@@ -200,6 +200,23 @@ export default function PaperList({
         sessions={sessions}
         sessionToAssignments={sessionToAssignments}
       />
+    </>
+  );
+}
+
+export default function Papers({ ...props }) {
+  if (Object.keys(props.papers).length === 0) {
+    return (
+      <Box sx={{ ml: 1 }}>
+        <Typography variant="h4">Papers</Typography>
+        <Initialize />
+      </Box>
+    );
+  }
+  return (
+    <Box sx={{ ml: 1 }}>
+      <Typography variant="h4">Papers</Typography>
+      <PaperList {...props} />;
     </Box>
   );
 }

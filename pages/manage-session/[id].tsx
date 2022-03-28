@@ -273,6 +273,7 @@ function PaperEntry({ assignment, assignments, papers }: { paper: Paper }) {
         <Typography>{paper.title}</Typography>
         {Object.entries(paper.attributes).map(([key, value]) => (
           <Chip
+            key={key}
             label={`${key}: ${value}`}
             variant="outlined"
             sx={{ mr: 0.5 }}

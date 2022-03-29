@@ -15,7 +15,7 @@ export default function Initialize() {
       const file = target.files[0];
       const read = new FileReader();
       read.readAsText(file);
-      read.onloadend = async function() {
+      read.onloadend = async function () {
         const papers = yaml.load(read.result as string) as Array<Paper>;
         await addPapers(
           papers.map(({ id, title, abstract, authors, attributes }) => {

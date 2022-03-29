@@ -9,10 +9,11 @@ module.exports = withConfig({
   },
   async redirects() {
     return [
-    {
-      source: '/',
-      destination: '/papers',
-      permanent: true,
-    },
-  ]}
+      {
+        source: "/",
+        destination: "/papers",
+        permanent: true,
+      },
+    ];
+  },
 });

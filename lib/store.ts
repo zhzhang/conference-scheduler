@@ -264,10 +264,7 @@ export const addSession = async (session: Session) => {
 
 export const deleteSession = async (id: String) => {
   try {
-    let { body } = await supabase
-      .from("sessions")
-      .delete()
-      .match({ id });
+    let { body } = await supabase.from("sessions").delete().match({ id });
     return body;
   } catch (error) {
     console.log("error", error);
@@ -276,10 +273,7 @@ export const deleteSession = async (id: String) => {
 
 export const updateSession = async (id, params: UpdateSessionParams) => {
   try {
-    let { body } = await supabase
-      .from("sessions")
-      .update(params)
-      .match({ id });
+    let { body } = await supabase.from("sessions").update(params).match({ id });
     return body;
   } catch (error) {
     console.log("error", error);
@@ -373,10 +367,7 @@ export const reorderAssignment = async (
 
 export const deleteAssignment = async (id: String) => {
   try {
-    let { body } = await supabase
-      .from("assignments")
-      .delete()
-      .match({ id });
+    let { body } = await supabase.from("assignments").delete().match({ id });
     return body;
   } catch (error) {
     console.log("error", error);

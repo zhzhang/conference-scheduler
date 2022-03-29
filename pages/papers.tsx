@@ -29,7 +29,6 @@ function AssignSessionDialog({
     <Box sx={{ p: 1, width: 500 }}>
       <Typography>Assign {papers.length} Paper(s)</Typography>
       <Autocomplete
-        value={session}
         options={Object.values(sessions)}
         onChange={(_event, session) => setSession(session)}
         getOptionLabel={(option: Session) => option?.name}
@@ -79,7 +78,7 @@ function FilteredPapers({ papers, sessions, sessionToAssignments }) {
       >
         Assign To Session
       </Button>
-      <Box sx={{ height: "calc(100vh - 200px)", overflowY: "scroll" }}>
+      <Box sx={{ height: "calc(100vh - 170px)", overflowY: "scroll" }}>
         <Dialog open={assignDialogOpen}>
           <AssignSessionDialog
             sessions={Object.values(sessions)}
@@ -216,7 +215,7 @@ export default function Papers({ ...props }) {
   return (
     <Box sx={{ ml: 1 }}>
       <Typography variant="h4">Papers</Typography>
-      <PaperList {...props} />;
+      <PaperList {...props} />
     </Box>
   );
 }

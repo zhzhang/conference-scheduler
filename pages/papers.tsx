@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import Dialog from "@mui/material/Dialog";
 import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import InputLabel from "@mui/material/InputLabel";
 import ListItemText from "@mui/material/ListItemText";
 import MenuItem from "@mui/material/MenuItem";
@@ -135,6 +136,7 @@ function PaperList({
 }) {
   const [attributeFilters, setAttributeFilters] = useState({});
   const attributes = {};
+  const [showUnassigned, toggleShowUnassigned] = useState(false);
   Object.values(papers).map((paper) => {
     Object.keys(paper.attributes).map((key) => {
       const value = paper.attributes[key];
@@ -147,8 +149,12 @@ function PaperList({
     });
   });
 
-  const filteredPapers = [];
-  for (let paper of Object.values(papers)) {
+  let filteredPapers = [];
+  let paperList = Object.values(papers);
+  if (showUnassigned) {
+    paperList = paperList.filter((paper) => !paperToAssignments[paper.id]);
+  }
+  for (let paper of paperList) {
     let include = true;
     for (let [key, values] of Object.entries(attributeFilters)) {
       if (!values || values.length === 0) {
@@ -184,15 +190,33 @@ function PaperList({
           >
             {Object.keys(values).map((name) => (
               <MenuItem key={name} value={name}>
-                <Checkbox checked={attributeFilters[key]?.includes(name)} />
+                <Checkbox
+                  checked={attributeFilters[key]?.includes(name) || false}
+                />
                 <ListItemText primary={name} />
               </MenuItem>
             ))}
           </Select>
         </FormControl>
       ))}
-      <Button size="large" onClick={() => setAttributeFilters({})}>
-        Clear
+      <FormControlLabel
+        sx={{ ml: 1 }}
+        control={
+          <Checkbox
+            checked={showUnassigned}
+            onChange={() => toggleShowUnassigned(!showUnassigned)}
+          />
+        }
+        label="Show Unassigned"
+      />
+      <Button
+        size="large"
+        onClick={() => {
+          setAttributeFilters({});
+          toggleShowUnassigned(false);
+        }}
+      >
+        Clear Filters
       </Button>
       <FilteredPapers
         papers={filteredPapers}

@@ -156,7 +156,7 @@ export default function MyApp({ Component, pageProps }) {
             <List>
               <ListItem
                 button
-                key="Login"
+                key="Sign In"
                 onClick={() => setLoginDialogOpen(true)}
               >
                 <ListItemIcon>
@@ -170,7 +170,7 @@ export default function MyApp({ Component, pageProps }) {
             <List>
               <ListItem
                 button
-                key="Logout"
+                key="Sign Out"
                 onClick={() => setLogoutDialogOpen(true)}
               >
                 <ListItemIcon>

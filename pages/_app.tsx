@@ -1,5 +1,5 @@
-import Initialize from "@/components/Initialize";
 import SignInDialog from "@/components/SignInDialog";
+import SignOutDialog from "@/components/SignOutDialog";
 import { useStore } from "@/lib/store";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -78,8 +78,8 @@ export default function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const user = supabase.auth.user();
-  // supabase.auth.signOut();
 
   if (props === null) {
     return (
@@ -93,15 +93,15 @@ export default function MyApp({ Component, pageProps }) {
     );
   }
 
-  if (Object.keys(props.papers).length === 0) {
-    return <Initialize />;
-  }
-
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <SignInDialog
         open={loginDialogOpen}
         onClose={() => setLoginDialogOpen(false)}
+      />
+      <SignOutDialog
+        open={logoutDialogOpen}
+        onClose={() => setLogoutDialogOpen(false)}
       />
       <Box sx={{ display: "flex" }}>
         <Drawer variant="permanent" open={open}>
@@ -156,7 +156,7 @@ export default function MyApp({ Component, pageProps }) {
             <List>
               <ListItem
                 button
-                key="Login"
+                key="Sign In"
                 onClick={() => setLoginDialogOpen(true)}
               >
                 <ListItemIcon>
@@ -170,8 +170,8 @@ export default function MyApp({ Component, pageProps }) {
             <List>
               <ListItem
                 button
-                key="Logout"
-                onClick={() => supabase.auth.signOut()}
+                key="Sign Out"
+                onClick={() => setLogoutDialogOpen(true)}
               >
                 <ListItemIcon>
                   <LogoutIcon />

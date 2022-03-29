@@ -29,7 +29,7 @@ export default function exportToYaml(sessions: Array<Session>) {
   const parallelSessions = {};
   // Generate the parallel sessions.
   for (let session of sessions) {
-    if (session.session_group) {
+    if (!session.session_group) {
       continue;
     }
     let parallelSession = parallelSessions[session.session_group];

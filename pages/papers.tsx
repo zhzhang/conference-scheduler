@@ -1,3 +1,4 @@
+import Initialize from "@/components/Initialize";
 import PaperCard from "@/components/PaperCard";
 import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
@@ -5,6 +6,7 @@ import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import Dialog from "@mui/material/Dialog";
 import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import InputLabel from "@mui/material/InputLabel";
 import ListItemText from "@mui/material/ListItemText";
 import MenuItem from "@mui/material/MenuItem";
@@ -28,7 +30,6 @@ function AssignSessionDialog({
     <Box sx={{ p: 1, width: 500 }}>
       <Typography>Assign {papers.length} Paper(s)</Typography>
       <Autocomplete
-        value={session}
         options={Object.values(sessions)}
         onChange={(_event, session) => setSession(session)}
         getOptionLabel={(option: Session) => option?.name}
@@ -78,7 +79,7 @@ function FilteredPapers({ papers, sessions, sessionToAssignments }) {
       >
         Assign To Session
       </Button>
-      <Box sx={{ height: "calc(100vh - 200px)", overflowY: "scroll" }}>
+      <Box sx={{ height: "calc(100vh - 170px)", overflowY: "scroll" }}>
         <Dialog open={assignDialogOpen}>
           <AssignSessionDialog
             sessions={Object.values(sessions)}
@@ -101,6 +102,7 @@ function FilteredPapers({ papers, sessions, sessionToAssignments }) {
         >
           {papers.slice(0, limit).map((paper) => (
             <PaperCard
+              key={paper.id}
               paper={paper}
               selected={selection.includes(paper)}
               setSelection={setSelection}
@@ -126,7 +128,7 @@ const MenuProps = {
   },
 };
 
-export default function PaperList({
+function PaperList({
   papers,
   sessions,
   sessionToAssignments,
@@ -134,6 +136,7 @@ export default function PaperList({
 }) {
   const [attributeFilters, setAttributeFilters] = useState({});
   const attributes = {};
+  const [showUnassigned, toggleShowUnassigned] = useState(false);
   Object.values(papers).map((paper) => {
     Object.keys(paper.attributes).map((key) => {
       const value = paper.attributes[key];
@@ -146,8 +149,12 @@ export default function PaperList({
     });
   });
 
-  const filteredPapers = [];
-  for (let paper of Object.values(papers)) {
+  let filteredPapers = [];
+  let paperList = Object.values(papers);
+  if (showUnassigned) {
+    paperList = paperList.filter((paper) => !paperToAssignments[paper.id]);
+  }
+  for (let paper of paperList) {
     let include = true;
     for (let [key, values] of Object.entries(attributeFilters)) {
       if (!values || values.length === 0) {
@@ -164,12 +171,10 @@ export default function PaperList({
   }
 
   return (
-    <Box sx={{ ml: 1 }}>
-      <Typography variant="h4">Papers</Typography>
-
+    <>
       {Object.entries(attributes).map(([key, values]) => (
-        <FormControl sx={{ mr: 1, width: 300 }}>
-          <InputLabel id="demo-multiple-checkbox-label">{key}</InputLabel>
+        <FormControl key={key} sx={{ mr: 1, width: 300 }}>
+          <InputLabel>{key}</InputLabel>
           <Select
             multiple
             value={attributeFilters[key] || []}
@@ -185,21 +190,56 @@ export default function PaperList({
           >
             {Object.keys(values).map((name) => (
               <MenuItem key={name} value={name}>
-                <Checkbox checked={attributeFilters[key]?.includes(name)} />
+                <Checkbox
+                  checked={attributeFilters[key]?.includes(name) || false}
+                />
                 <ListItemText primary={name} />
               </MenuItem>
             ))}
           </Select>
         </FormControl>
       ))}
-      <Button size="large" onClick={() => setAttributeFilters({})}>
-        Clear
+      <FormControlLabel
+        sx={{ ml: 1 }}
+        control={
+          <Checkbox
+            checked={showUnassigned}
+            onChange={() => toggleShowUnassigned(!showUnassigned)}
+          />
+        }
+        label="Show Unassigned"
+      />
+      <Button
+        size="large"
+        onClick={() => {
+          setAttributeFilters({});
+          toggleShowUnassigned(false);
+        }}
+      >
+        Clear Filters
       </Button>
       <FilteredPapers
         papers={filteredPapers}
         sessions={sessions}
         sessionToAssignments={sessionToAssignments}
       />
+    </>
+  );
+}
+
+export default function Papers({ ...props }) {
+  if (Object.keys(props.papers).length === 0) {
+    return (
+      <Box sx={{ ml: 1 }}>
+        <Typography variant="h4">Papers</Typography>
+        <Initialize />
+      </Box>
+    );
+  }
+  return (
+    <Box sx={{ ml: 1 }}>
+      <Typography variant="h4">Papers</Typography>
+      <PaperList {...props} />
     </Box>
   );
 }

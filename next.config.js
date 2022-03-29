@@ -7,4 +7,13 @@ module.exports = withConfig({
   typescript: {
     ignoreBuildErrors: true,
   },
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/papers",
+        permanent: true,
+      },
+    ];
+  },
 });

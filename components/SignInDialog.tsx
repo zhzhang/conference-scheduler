@@ -16,9 +16,22 @@ export default function SignInDialog({ open, onClose }) {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const { error } = await supabase.auth.signIn({
-      email: data.get("email"),
-    });
+    console.log(
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3000/papers"
+        : "https://conference-scheduler.vercel.app/papers"
+    );
+    const { error } = await supabase.auth.signIn(
+      {
+        email: data.get("email"),
+      },
+      {
+        redirectTo:
+          process.env.NODE_ENV === "development"
+            ? "http://localhost:3000/papers"
+            : "https://conference-scheduler.vercel.app/papers",
+      }
+    );
     if (error) {
       setMessage({ type: "error", body: error.message });
     } else {

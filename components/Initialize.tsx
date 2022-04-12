@@ -28,7 +28,6 @@ export default function Initialize() {
             };
           })
         );
-        // window.location.href = "/papers";
       };
     }
   };

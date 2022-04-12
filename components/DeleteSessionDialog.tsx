@@ -9,14 +9,14 @@ export default function DeleteSessionDialog({ open, session, onClose }) {
     <Dialog open={open} onClose={onClose}>
       <Box sx={{ p: 2 }}>
         <Typography variant="h6">Delete Session?</Typography>
-        <Typography>Are you sure you want to delete {name}?</Typography>
+        <Typography>Are you sure you want to delete {session.name}?</Typography>
         <Button onClick={onClose}>Cancel</Button>
         <Button
           color="error"
           sx={{ textAlign: "right" }}
           onClick={async () => {
             await deleteSession(session.id);
-            onBlur();
+            onClose();
           }}
         >
           Delete

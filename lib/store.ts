@@ -246,7 +246,18 @@ export const fetchAssignments = async (setAssignments) => {
 
 export const addPapers = async (papers: Array<Paper>) => {
   try {
-    let { body } = await supabase.from("papers").insert(papers);
+    let { body } = await supabase
+      .from("papers")
+      .upsert(papers, { onConflict: "id" });
+    return body;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+export const deletePaper = async (id: String) => {
+  try {
+    let { body } = await supabase.from("papers").delete().match({ id });
     return body;
   } catch (error) {
     console.log("error", error);

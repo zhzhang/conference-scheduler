@@ -1,11 +1,14 @@
+import CloseIcon from "@mui/icons-material/Close";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
+import Dialog from "@mui/material/Dialog";
+import IconButton from "@mui/material/IconButton";
 import MuiPaper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
-import { Paper } from "../lib/store";
+import { deletePaper, Paper } from "../lib/store";
 
 const StyledPaper = styled(MuiPaper, {
   shouldForwardProp: (prop) => prop !== "open",
@@ -19,9 +22,31 @@ const StyledPaper = styled(MuiPaper, {
   },
 }));
 
+function DeletePaperDialog({ open, paper, onClose }) {
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <Box sx={{ p: 2 }}>
+        <Typography variant="h6">Delete Paper?</Typography>
+        <Typography>Are you sure you want to delete:</Typography>
+        <Typography>{paper.title}</Typography>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button
+          color="error"
+          sx={{ textAlign: "right" }}
+          onClick={async () => {
+            await deletePaper(paper.id);
+            onClose();
+          }}
+        >
+          Delete
+        </Button>
+      </Box>
+    </Dialog>
+  );
+}
+
 export default function PaperCard({
   paper,
-  sessions,
   selected,
   onSelect,
   onDeselect,
@@ -31,6 +56,7 @@ export default function PaperCard({
 }) {
   const { id, title, abstract, authors, attributes } = paper;
   const [showAbstract, setShowAbstract] = useState(false);
+  const [deleteDialogOpen, toggleDeleteDialogOpen] = useState(false);
   const handleClick = () => {
     if (selected) {
       onDeselect(paper);
@@ -46,7 +72,23 @@ export default function PaperCard({
       onClick={handleClick}
     >
       <Box sx={{ p: 1 }}>
-        <Typography sx={{ fontWeight: "bold" }}>{title}</Typography>
+        <Box sx={{ display: "flex" }}>
+          <Typography variant="subtitle2" sx={{ mr: 0.5 }}>
+            {id}
+          </Typography>
+          <Typography sx={{ fontWeight: "bold", flex: 1 }}>{title}</Typography>
+          <IconButton
+            sx={{ height: 24, width: 24 }}
+            onClick={() => toggleDeleteDialogOpen(true)}
+          >
+            <CloseIcon sx={{ height: 16, width: 16 }} />
+          </IconButton>
+          <DeletePaperDialog
+            open={deleteDialogOpen}
+            paper={paper}
+            onClose={() => toggleDeleteDialogOpen(false)}
+          />
+        </Box>
         <Typography>
           {authors
             .map(({ first_name, middle_name, last_name }) => {

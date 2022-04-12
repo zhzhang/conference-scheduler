@@ -73,12 +73,15 @@ function FilteredPapers({ papers, sessions, sessionToAssignments }) {
   const [assignDialogOpen, toggleAssignDialogOpen] = useState(false);
   return (
     <Box>
-      <Button
-        disabled={selection.length === 0}
-        onClick={() => toggleAssignDialogOpen(true)}
-      >
-        Assign To Session
-      </Button>
+      <Box sx={{ display: "flex" }}>
+        <Button
+          disabled={selection.length === 0}
+          onClick={() => toggleAssignDialogOpen(true)}
+        >
+          Assign To Session
+        </Button>
+        <Initialize />
+      </Box>
       <Box sx={{ height: "calc(100vh - 170px)", overflowY: "scroll" }}>
         <Dialog open={assignDialogOpen}>
           <AssignSessionDialog

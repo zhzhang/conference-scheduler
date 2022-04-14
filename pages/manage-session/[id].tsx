@@ -1,11 +1,9 @@
 import AddPapersDialog from "@/components/AddPapersDialog";
-import PaperTitlePopover, {
-  getAuthorName,
-} from "@/components/PaperTitlePopover";
 import AddIcon from "@mui/icons-material/Add";
 import DownIcon from "@mui/icons-material/ArrowDropDown";
 import UpIcon from "@mui/icons-material/ArrowDropUp";
 import CloseIcon from "@mui/icons-material/Close";
+import ErrorIcon from "@mui/icons-material/Error";
 import SubtractIcon from "@mui/icons-material/Remove";
 import DesktopDateTimePicker from "@mui/lab/DesktopDateTimePicker";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
@@ -17,6 +15,7 @@ import Dialog from "@mui/material/Dialog";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
 import MuiIconButton from "@mui/material/IconButton";
+import Popover from "@mui/material/Popover";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import _ from "lodash";
@@ -26,6 +25,7 @@ import { useState } from "react";
 import {
   deleteAssignment,
   Direction,
+  getAuthorId,
   Paper,
   reorderAssignment,
   setPresentationLength,
@@ -238,7 +238,82 @@ function IconButton({ Icon, onClick, sx = null }) {
   );
 }
 
-function PaperEntry({ assignment, assignments, papers }: { paper: Paper }) {
+function ConflictPopover({ authors, session, authorToSessions }) {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+
+  const conflicts = [];
+  for (const author of authors) {
+    const sessions = authorToSessions[getAuthorId(author)];
+    if (!sessions) {
+      continue;
+    }
+    for (const assignedSession of sessions) {
+      if (
+        session.session_group === assignedSession.session_group &&
+        session.id !== assignedSession.id
+      ) {
+        conflicts.push(
+          `${author.first_name} ${author.last_name} has another paper assigned to ${session.name} in the same parallel session, ${session.session_group}`
+        );
+      }
+    }
+  }
+  if (conflicts.length > 0) {
+    return (
+      <>
+        <ErrorIcon
+          onMouseEnter={handlePopoverOpen}
+          onMouseLeave={handlePopoverClose}
+          sx={{ width: 32, height: 32 }}
+          color="error"
+        />
+        <Popover
+          id="mouse-over-popover"
+          sx={{
+            pointerEvents: "none",
+          }}
+          open={open}
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "left",
+          }}
+          onClose={handlePopoverClose}
+          disableRestoreFocus
+        >
+          {conflicts.map((line) => (
+            <Typography key={line} sx={{ p: 1 }}>
+              {line}
+            </Typography>
+          ))}
+        </Popover>
+      </>
+    );
+  }
+  return null;
+}
+
+function PaperEntry({
+  session,
+  assignment,
+  assignments,
+  papers,
+  authorToSessions,
+}: {
+  paper: Paper;
+}) {
   const [removeDialogOpen, toggleRemoveDialogOpen] = useState(false);
   const paper = papers[assignment.paper_id];
   if (!paper) {
@@ -270,15 +345,29 @@ function PaperEntry({ assignment, assignments, papers }: { paper: Paper }) {
         </Box>
       </Dialog>
       <Box sx={{ mb: 2, flex: 1 }}>
-        <Typography>{paper.title}</Typography>
-        {Object.entries(paper.attributes).map(([key, value]) => (
-          <Chip
-            key={key}
-            label={`${key}: ${value}`}
-            variant="outlined"
-            sx={{ mr: 0.5 }}
-          />
-        ))}
+        <Box sx={{ display: "flex" }}>
+          <Typography sx={{ mr: 0.5 }} variant="caption">
+            {paper.id}
+          </Typography>
+          <Typography>{paper.title}</Typography>
+        </Box>
+        <Box display="flex">
+          {session.session_group && (
+            <ConflictPopover
+              authorToSessions={authorToSessions}
+              session={session}
+              authors={paper.authors}
+            />
+          )}
+          {Object.entries(paper.attributes).map(([key, value]) => (
+            <Chip
+              key={key}
+              label={`${key}: ${value}`}
+              variant="outlined"
+              sx={{ mr: 0.5 }}
+            />
+          ))}
+        </Box>
       </Box>
       <IconButton
         Icon={SubtractIcon}
@@ -319,6 +408,7 @@ function ManageSession({
   papers,
   paperToAssignments,
   sessionToAssignments,
+  authorToSessions,
   sessions,
   sessionGroups,
   locations,
@@ -327,35 +417,7 @@ function ManageSession({
   const [addPapersOpen, setAddPapersOpen] = useState(false);
   const assignments = sessionToAssignments[session.id] || [];
   const orderedAssignments = _.sortBy(assignments, "slot_number");
-  const columns = [
-    {
-      field: "title",
-      headerName: "Title",
-      width: 900,
-      renderCell: ({ row }) => {
-        return <PaperTitlePopover paper={row} />;
-      },
-    },
-    {
-      field: "authors",
-      headerName: "Authors",
-      width: 300,
-      renderCell: ({ row }) => {
-        return row.authors.map(getAuthorName).join(", ");
-      },
-    },
-    {
-      field: "sessions",
-      headerName: "Sessions",
-      width: 300,
-      renderCell: ({ row }) => {
-        const assignments = paperToAssignments[row.id] || [];
-        return assignments
-          .map((assignment) => sessions[assignment.session_id]?.name)
-          .join(", ");
-      },
-    },
-  ];
+
   return (
     <Box sx={{ maxWidth: 1200 }}>
       <SessionDetails
@@ -370,9 +432,11 @@ function ManageSession({
           {orderedAssignments.map((assignment) => (
             <PaperEntry
               key={assignment.id}
+              session={session}
               assignments={assignments}
               assignment={assignment}
               papers={papers}
+              authorToSessions={authorToSessions}
             />
           ))}
           <AddPapersDialog

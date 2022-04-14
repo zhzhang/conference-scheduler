@@ -13,6 +13,7 @@ export default function SessionList({
   papers,
   locations,
   sessionToAssignments,
+  authorToSessions,
 }) {
   const [name, setName] = useState("");
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,6 +61,7 @@ export default function SessionList({
                 locations={locations}
                 papers={papers}
                 assignments={sessionToAssignments[id]}
+                authorToSessions={authorToSessions}
               />
             </Grid>
           ))}

@@ -2,6 +2,10 @@ import { createClient } from "@supabase/supabase-js";
 import _ from "lodash";
 import { useEffect, useState } from "react";
 
+export function getAuthorId(author): string {
+  return author.first_name + (author.middle_name || "") + author.last_name;
+}
+
 export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -174,6 +178,32 @@ export const useStore = (props?) => {
     });
   }
 
+  const authorToSessions = {};
+  for (const session of Object.values(sessions)) {
+    if (session.session_group) {
+      const assignments = sessionToAssignments[session.id];
+      if (!assignments) {
+        continue;
+      }
+      for (const assignment of assignments) {
+        const paper = papers[assignment.paper_id];
+        if (!paper) {
+          continue;
+        }
+        for (const author of paper.authors) {
+          const authorId = getAuthorId(author);
+          if (authorId in authorToSessions) {
+            if (!authorToSessions[authorId].includes(session)) {
+              authorToSessions[authorId].push(session);
+            }
+          } else {
+            authorToSessions[authorId] = [session];
+          }
+        }
+      }
+    }
+  }
+
   return {
     papers,
     attributeValues,
@@ -183,6 +213,7 @@ export const useStore = (props?) => {
     sessionGroups,
     paperToAssignments,
     sessionToAssignments,
+    authorToSessions,
   };
 };
 

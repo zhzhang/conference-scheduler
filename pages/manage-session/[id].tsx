@@ -294,7 +294,9 @@ function ConflictPopover({ authors, session, authorToSessions }) {
           disableRestoreFocus
         >
           {conflicts.map((line) => (
-            <Typography sx={{ p: 1 }}>{line}</Typography>
+            <Typography key={line} sx={{ p: 1 }}>
+              {line}
+            </Typography>
           ))}
         </Popover>
       </>

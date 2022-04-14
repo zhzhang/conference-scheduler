@@ -1,12 +1,14 @@
+import ErrorIcon from "@mui/icons-material/Error";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
+import Popover from "@mui/material/Popover";
 import Typography from "@mui/material/Typography";
 import { format } from "date-fns";
 import * as moment from "moment";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { Session } from "../lib/store";
+import { getAuthorId, Session } from "../lib/store";
 import DeleteSessionDialog from "./DeleteSessionDialog";
 
 function formatDate(start: Date, end: Date): string {
@@ -16,10 +18,57 @@ function formatDate(start: Date, end: Date): string {
   )}`;
 }
 
+function ConflictPopover({ open }) {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+  if (open) {
+    return (
+      <>
+        <ErrorIcon
+          onMouseEnter={handlePopoverOpen}
+          onMouseLeave={handlePopoverClose}
+          sx={{ width: 32, height: 32 }}
+          color="error"
+        />
+        <Popover
+          id="mouse-over-popover"
+          sx={{
+            pointerEvents: "none",
+          }}
+          open={Boolean(anchorEl)}
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "left",
+          }}
+          onClose={handlePopoverClose}
+          disableRestoreFocus
+        >
+          <Box sx={{ m: 1, maxWidth: 300 }}>
+            This session has conflicting assignments with another session it is
+            parallel session group. Please click the Edit button to resolve.
+          </Box>
+        </Popover>
+      </>
+    );
+  }
+  return null;
+}
+
 export default function SessionCard({
   session,
   papers,
   locations,
+  authorToSessions,
   assignments = [],
 }: {
   session: Session;
@@ -32,12 +81,39 @@ export default function SessionCard({
     sessionLength = moment(end_time).diff(moment(start_time), "minutes");
   }
 
+  let conflict = false;
+  if (session.session_group) {
+    for (let assignment of assignments) {
+      const paper = papers[assignment.paper_id];
+      if (!paper) {
+        continue;
+      }
+      for (let author of paper.authors) {
+        const sessions = authorToSessions[getAuthorId(author)];
+        if (sessions) {
+          for (let otherSession of sessions) {
+            if (
+              otherSession.id !== session.id &&
+              otherSession.session_group === session.session_group
+            ) {
+              conflict = true;
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+
   return (
     <Card sx={{ mb: 1 }}>
       <Box sx={{ p: 1 }}>
-        <Typography variant="h6" sx={{ flex: 1 }}>
-          {name}
-        </Typography>
+        <Box sx={{ display: "flex", flex: 1 }}>
+          <Typography variant="h6" sx={{ flex: 1 }}>
+            {name}
+          </Typography>
+          <ConflictPopover open={conflict} />
+        </Box>
         <Typography sx={{ flex: 1 }}>
           {location || "No Location Set"}
         </Typography>

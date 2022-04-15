@@ -74,7 +74,8 @@ export default function SessionCard({
   session: Session;
 }) {
   const router = useRouter();
-  const { id, name, start_time, end_time, no_paper, location } = session;
+  const { id, name, start_time, end_time, no_paper, location, session_group } =
+    session;
   const [deleteDialogOpen, toggleDeleteDialogOpen] = useState(false);
   let sessionLength;
   if (start_time && end_time && assignments.length > 0) {
@@ -114,14 +115,15 @@ export default function SessionCard({
           </Typography>
           <ConflictPopover open={conflict} />
         </Box>
-        <Typography sx={{ flex: 1 }}>
+        <Typography color={location ? "text" : "error"}>
           {location || "No Location Set"}
         </Typography>
-        <Typography sx={{ flex: 1 }}>
+        <Typography color={start_time && end_time ? "text" : "error"}>
           {start_time && end_time
             ? `${formatDate(start_time, end_time)}, ${sessionLength} minutes`
             : "No Times Set"}
         </Typography>
+        {session_group && <Typography>{session_group}</Typography>}
         <Button
           onClick={() =>
             router.push(`/manage-session/${id}`, undefined, {

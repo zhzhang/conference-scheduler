@@ -8,7 +8,7 @@ import MuiPaper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
-import { deletePaper, Paper } from "../lib/store";
+import { deletePaper, Paper, renderAuthorName } from "../lib/store";
 
 const StyledPaper = styled(MuiPaper, {
   shouldForwardProp: (prop) => prop !== "open",
@@ -90,16 +90,7 @@ export default function PaperCard({
           />
         </Box>
         <Typography>
-          {authors
-            .map(({ first_name, middle_name, last_name }) => {
-              let name = first_name;
-              if (middle_name) {
-                name += ` ${middle_name}`;
-              }
-              name += ` ${last_name}`;
-              return name;
-            })
-            .join(", ")}
+          {authors.map((author) => renderAuthorName(author)).join(", ")}
         </Typography>
         <Box sx={{ display: "flex" }}>
           <Button

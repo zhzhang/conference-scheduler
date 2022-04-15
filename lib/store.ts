@@ -2,6 +2,16 @@ import { createClient } from "@supabase/supabase-js";
 import _ from "lodash";
 import { useEffect, useState } from "react";
 
+export function renderAuthorName(author) {
+  const { first_name, middle_name, last_name } = author;
+  let name = first_name;
+  if (middle_name) {
+    name += ` ${middle_name}`;
+  }
+  name += ` ${last_name}`;
+  return name;
+}
+
 export function getAuthorId(author): string {
   return author.first_name + (author.middle_name || "") + author.last_name;
 }

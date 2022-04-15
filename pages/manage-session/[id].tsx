@@ -261,7 +261,7 @@ function ConflictPopover({ authors, session, authorToSessions }) {
         session.id !== assignedSession.id
       ) {
         conflicts.push(
-          `${author.first_name} ${author.last_name} has another paper assigned to ${session.name} in the same parallel session, ${session.session_group}`
+          `${author.first_name} ${author.last_name} has another paper assigned to ${assignedSession.name} in the same parallel session, ${session.session_group}`
         );
       }
     }

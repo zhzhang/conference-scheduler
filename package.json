@@ -1,6 +1,5 @@
 {
-  "name": "tmp",
-  "private": true,
+  "name": "conference-scheduler",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

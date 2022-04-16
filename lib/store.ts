@@ -368,50 +368,25 @@ export const reorderAssignment = async (
   assignments
 ) => {
   try {
-    let slot_number = assignment.slot_number;
-    if (direction === Direction.UP) {
-      if (slot_number === 0) {
-        return;
-      }
-      let aboveAssignment;
-      for (const assignment of assignments) {
-        if (
-          assignment.slot_number < slot_number &&
-          (aboveAssignment === undefined ||
-            assignment.slot_number > aboveAssignment?.slot_number)
-        ) {
-          aboveAssignment = assignment;
-        }
-      }
-      if (aboveAssignment === undefined) {
-        return;
-      }
-      const { body } = await supabase.from("assignments").upsert([
-        { ...assignment, slot_number: aboveAssignment.slot_number },
-        { ...aboveAssignment, slot_number: aboveAssignment.slot_number + 1 },
-      ]);
-      return body;
+    const orderedAssignments = _.sortBy(assignments, "slot_number");
+    for (const [i, a] of orderedAssignments.entries()) {
+      a.slot_number = i;
     }
-    if (direction === Direction.DOWN) {
-      let belowAssignment;
-      for (const assignment of assignments) {
-        if (
-          assignment.slot_number > slot_number &&
-          (belowAssignment === undefined ||
-            assignment.slot_number < belowAssignment?.slot_number)
-        ) {
-          belowAssignment = assignment;
-        }
-      }
-      if (belowAssignment === undefined) {
-        return;
-      }
-      const { body } = await supabase.from("assignments").upsert([
-        { ...assignment, slot_number: assignment.slot_number + 1 },
-        { ...belowAssignment, slot_number: assignment.slot_number },
-      ]);
-      return body;
+    if (direction === Direction.UP && assignment.slot_number > 0) {
+      orderedAssignments[assignment.slot_number - 1].slot_number =
+        assignment.slot_number;
+      assignment.slot_number -= 1;
+    } else if (
+      direction === Direction.DOWN &&
+      assignment.slot_number < orderedAssignments.length - 1
+    ) {
+      orderedAssignments[assignment.slot_number + 1].slot_number =
+        assignment.slot_number;
+      assignment.slot_number += 1;
     }
+    const { body } = await supabase
+      .from("assignments")
+      .upsert(orderedAssignments);
   } catch (error) {
     console.log("error", error);
   }

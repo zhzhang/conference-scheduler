@@ -16,6 +16,7 @@ import { addSession } from "../lib/store";
 export default function SessionList({
   sessions,
   papers,
+  assignments,
   locations,
   sessionToAssignments,
   authorToSessions,
@@ -49,7 +50,11 @@ export default function SessionList({
         <Typography variant="h4" sx={{ flex: 1 }}>
           Sessions
         </Typography>
-        <Button onClick={() => exportToYaml(Object.values(sessions))}>
+        <Button
+          onClick={() =>
+            exportToYaml(Object.values(sessions), sessionToAssignments)
+          }
+        >
           Export
         </Button>
       </Box>

@@ -4,8 +4,7 @@ import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import Popover from "@mui/material/Popover";
 import Typography from "@mui/material/Typography";
-import { format } from "date-fns";
-import * as moment from "moment";
+import { differenceInMinutes, format } from "date-fns";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { getAuthorId, Session } from "../lib/store";
@@ -79,7 +78,10 @@ export default function SessionCard({
   const [deleteDialogOpen, toggleDeleteDialogOpen] = useState(false);
   let sessionLength;
   if (start_time && end_time && assignments.length > 0) {
-    sessionLength = moment(end_time).diff(moment(start_time), "minutes");
+    sessionLength = differenceInMinutes(
+      new Date(end_time),
+      new Date(start_time)
+    );
   }
 
   let conflict = false;

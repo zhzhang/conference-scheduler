@@ -78,7 +78,7 @@ export default function exportToYaml(
       );
     }
   }
-  const output = [];
+  let output = [];
   for (let parallelSession of Object.values(parallelSessions)) {
     output.push(parallelSession);
   }
@@ -87,6 +87,7 @@ export default function exportToYaml(
       output.push(convertToOutputSession(session, sessionToAssignments));
     }
   }
+  output = _.sortBy(output, "start_time");
   const yamlOutput = yaml.dump(output);
   const element = document.createElement("a");
   const file = new Blob([yamlOutput], {

@@ -52,7 +52,7 @@ export default function SessionList({
         </Typography>
         <Button
           onClick={() =>
-            exportToYaml(Object.values(sessions), sessionToAssignments)
+            exportToYaml(Object.values(sessions), sessionToAssignments, papers)
           }
         >
           Export

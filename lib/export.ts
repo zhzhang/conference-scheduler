@@ -19,7 +19,8 @@ type OutputSession = {
 
 function convertToOutputSession(
   session: Session,
-  sessionToAssignments
+  sessionToAssignments,
+  papers
 ): OutputSession {
   const output = {
     title: session.name,
@@ -33,11 +34,14 @@ function convertToOutputSession(
     output.papers = [];
     let start = new Date(output.start_time);
     for (let assignment of assignments) {
+      const paper = papers[assignment.paper_id];
       const end = add(start, { minutes: assignment.minutes });
       output.papers.push({
         id: assignment.paper_id,
         start_time: formatISO9075(start),
         end_time: formatISO9075(end),
+        title: paper.title,
+        authors: paper.authors,
       });
       start = end;
     }
@@ -47,7 +51,8 @@ function convertToOutputSession(
 
 export default function exportToYaml(
   sessions: Array<Session>,
-  sessionToAssignments
+  sessionToAssignments,
+  papers
 ) {
   const parallelSessions = {};
   // Generate the parallel sessions.
@@ -61,7 +66,9 @@ export default function exportToYaml(
         title: session.session_group,
         start_time: formatISO9075(new Date(session.start_time)),
         end_time: formatISO9075(new Date(session.end_time)),
-        subsessions: [convertToOutputSession(session, sessionToAssignments)],
+        subsessions: [
+          convertToOutputSession(session, sessionToAssignments, papers),
+        ],
       };
       parallelSessions[session.session_group] = parallelSession;
     } else {
@@ -74,7 +81,7 @@ export default function exportToYaml(
         parallelSession.end_time = formatISO9075(new Date(session.end_time));
       }
       parallelSession.subsessions.push(
-        convertToOutputSession(session, sessionToAssignments)
+        convertToOutputSession(session, sessionToAssignments, papers)
       );
     }
   }
@@ -84,7 +91,9 @@ export default function exportToYaml(
   }
   for (let session of sessions) {
     if (!session.session_group) {
-      output.push(convertToOutputSession(session, sessionToAssignments));
+      output.push(
+        convertToOutputSession(session, sessionToAssignments, papers)
+      );
     }
   }
   output = _.sortBy(output, "start_time");

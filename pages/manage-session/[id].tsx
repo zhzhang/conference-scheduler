@@ -371,44 +371,42 @@ function PaperEntry({
                 .join(", ")}
             </Typography>
           </Box>
-          <Box sx={{ display: "flex" }}>
-            {!session.poster && (
-              <>
-                <IconButton
-                  Icon={SubtractIcon}
-                  onClick={() =>
-                    setPresentationLength(assignment.id, assignment.minutes - 5)
-                  }
-                />
-                <Typography sx={{ height: 24, p: 0.5 }}>
-                  {assignment.minutes} min
-                </Typography>
-                <IconButton
-                  sx={{ mr: 1 }}
-                  Icon={AddIcon}
-                  onClick={() =>
-                    setPresentationLength(assignment.id, assignment.minutes + 5)
-                  }
-                />
-              </>
-            )}
-            <IconButton
-              Icon={UpIcon}
-              onClick={() =>
-                reorderAssignment(assignment, Direction.UP, assignments)
-              }
-            />
-            <IconButton
-              Icon={DownIcon}
-              onClick={() =>
-                reorderAssignment(assignment, Direction.DOWN, assignments)
-              }
-            />
-            <IconButton
-              Icon={CloseIcon}
-              onClick={() => toggleRemoveDialogOpen(true)}
-            />
-          </Box>
+          {!session.poster && (
+            <Box sx={{ display: "flex" }}>
+              <IconButton
+                Icon={SubtractIcon}
+                onClick={() =>
+                  setPresentationLength(assignment.id, assignment.minutes - 5)
+                }
+              />
+              <Typography sx={{ height: 24, p: 0.5 }}>
+                {assignment.minutes} min
+              </Typography>
+              <IconButton
+                sx={{ mr: 1 }}
+                Icon={AddIcon}
+                onClick={() =>
+                  setPresentationLength(assignment.id, assignment.minutes + 5)
+                }
+              />
+              <IconButton
+                Icon={UpIcon}
+                onClick={() =>
+                  reorderAssignment(assignment, Direction.UP, assignments)
+                }
+              />
+              <IconButton
+                Icon={DownIcon}
+                onClick={() =>
+                  reorderAssignment(assignment, Direction.DOWN, assignments)
+                }
+              />
+              <IconButton
+                Icon={CloseIcon}
+                onClick={() => toggleRemoveDialogOpen(true)}
+              />
+            </Box>
+          )}
         </Box>
         <Box display="flex">
           {session.session_group && (

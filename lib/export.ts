@@ -42,6 +42,7 @@ function convertToOutputSession(
         end_time: formatISO9075(end),
         title: paper.title,
         authors: paper.authors,
+        attributes: paper.attributes,
       });
       start = end;
     }

@@ -77,7 +77,7 @@ export default function SessionCard({
     session;
   const [deleteDialogOpen, toggleDeleteDialogOpen] = useState(false);
   let sessionLength;
-  if (start_time && end_time && assignments.length > 0) {
+  if (start_time && end_time) {
     sessionLength = differenceInMinutes(
       new Date(end_time),
       new Date(start_time)

@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS sessions (
     location VARCHAR(128),
     chair VARCHAR(256),
     session_group VARCHAR(256),
-    paper_scheduled BOOLEAN NOT NULL DEFAULT TRUE,
+    poster BOOLEAN NOT NULL DEFAULT FALSE,
     no_paper BOOLEAN NOT NULL DEFAULT FALSE
 );
 ALTER TABLE sessions ENABLE ROW LEVEL SECURITY;

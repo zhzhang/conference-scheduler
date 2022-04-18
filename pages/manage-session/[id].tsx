@@ -41,6 +41,7 @@ function SessionDetails({ session, locations, chairs, sessionGroups }) {
   const [chair, setChair] = useState(session.chair);
   const [sessionGroup, setSessionGroup] = useState(session.session_group);
   const [noPaper, setNoPaper] = useState(session.no_paper);
+  const [poster, setPoster] = useState(session.poster);
   const [locationInput, setLocationInput] = useState("");
   const [chairInput, setChairInput] = useState("");
   const [sessionGroupInput, setSessionGroupInput] = useState("");
@@ -53,6 +54,7 @@ function SessionDetails({ session, locations, chairs, sessionGroups }) {
     sessionGroup !== session.session_group ||
     start !== session.start_time ||
     noPaper !== session.no_paper ||
+    poster !== session.poster ||
     end !== session.end_time;
 
   return (
@@ -169,7 +171,7 @@ function SessionDetails({ session, locations, chairs, sessionGroups }) {
             )}
           />
         </Grid>
-        <Grid item sm={4}>
+        <Grid item sm={3}>
           <DesktopDateTimePicker
             ampm={false}
             value={start}
@@ -182,7 +184,7 @@ function SessionDetails({ session, locations, chairs, sessionGroups }) {
             renderInput={(params) => <TextField fullWidth {...params} />}
           />
         </Grid>
-        <Grid item sm={4}>
+        <Grid item sm={3}>
           <DesktopDateTimePicker
             ampm={false}
             value={end}
@@ -195,7 +197,7 @@ function SessionDetails({ session, locations, chairs, sessionGroups }) {
             renderInput={(params) => <TextField fullWidth {...params} />}
           />
         </Grid>
-        <Grid item sm={4}>
+        <Grid item sm={3}>
           <FormControlLabel
             control={
               <Checkbox
@@ -204,6 +206,14 @@ function SessionDetails({ session, locations, chairs, sessionGroups }) {
               />
             }
             label="Does Not Contain Paper Presentations"
+          />
+        </Grid>
+        <Grid item sm={3}>
+          <FormControlLabel
+            control={
+              <Checkbox checked={poster} onChange={() => setPoster(!poster)} />
+            }
+            label="Poster Session"
           />
         </Grid>
         <Grid item sm={12}>
@@ -215,6 +225,7 @@ function SessionDetails({ session, locations, chairs, sessionGroups }) {
                 location,
                 chair,
                 no_paper: noPaper,
+                poster,
                 session_group: sessionGroup,
                 start_time: start,
                 end_time: end,
@@ -361,22 +372,26 @@ function PaperEntry({
             </Typography>
           </Box>
           <Box sx={{ display: "flex" }}>
-            <IconButton
-              Icon={SubtractIcon}
-              onClick={() =>
-                setPresentationLength(assignment.id, assignment.minutes - 5)
-              }
-            />
-            <Typography sx={{ height: 24, p: 0.5 }}>
-              {assignment.minutes} min
-            </Typography>
-            <IconButton
-              sx={{ mr: 1 }}
-              Icon={AddIcon}
-              onClick={() =>
-                setPresentationLength(assignment.id, assignment.minutes + 5)
-              }
-            />
+            {!session.poster && (
+              <>
+                <IconButton
+                  Icon={SubtractIcon}
+                  onClick={() =>
+                    setPresentationLength(assignment.id, assignment.minutes - 5)
+                  }
+                />
+                <Typography sx={{ height: 24, p: 0.5 }}>
+                  {assignment.minutes} min
+                </Typography>
+                <IconButton
+                  sx={{ mr: 1 }}
+                  Icon={AddIcon}
+                  onClick={() =>
+                    setPresentationLength(assignment.id, assignment.minutes + 5)
+                  }
+                />
+              </>
+            )}
             <IconButton
               Icon={UpIcon}
               onClick={() =>

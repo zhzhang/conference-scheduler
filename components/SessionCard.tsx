@@ -91,17 +91,15 @@ export default function SessionCard({
       if (!paper) {
         continue;
       }
-      for (let author of paper.authors) {
-        const sessions = authorToSessions[getAuthorId(author)];
-        if (sessions) {
-          for (let otherSession of sessions) {
-            if (
-              otherSession.id !== session.id &&
-              otherSession.session_group === session.session_group
-            ) {
-              conflict = true;
-              break;
-            }
+      const author = paper.authors[0];
+      const sessions = authorToSessions[getAuthorId(author)];
+      if (sessions) {
+        for (let otherSession of sessions) {
+          if (
+            otherSession.id !== session.id &&
+            otherSession.session_group === session.session_group
+          ) {
+            conflict = true;
           }
         }
       }

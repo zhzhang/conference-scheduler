@@ -200,15 +200,14 @@ export const useStore = (props?) => {
         if (!paper) {
           continue;
         }
-        for (const author of paper.authors) {
-          const authorId = getAuthorId(author);
-          if (authorId in authorToSessions) {
-            if (!authorToSessions[authorId].includes(session)) {
-              authorToSessions[authorId].push(session);
-            }
-          } else {
-            authorToSessions[authorId] = [session];
+        const author = paper.authors[0];
+        const authorId = getAuthorId(author);
+        if (authorId in authorToSessions) {
+          if (!authorToSessions[authorId].includes(session)) {
+            authorToSessions[authorId].push(session);
           }
+        } else {
+          authorToSessions[authorId] = [session];
         }
       }
     }

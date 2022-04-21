@@ -262,11 +262,9 @@ function ConflictPopover({ authors, session, authorToSessions }) {
   const open = Boolean(anchorEl);
 
   const conflicts = [];
-  for (const author of authors) {
-    const sessions = authorToSessions[getAuthorId(author)];
-    if (!sessions) {
-      continue;
-    }
+  const author = authors[0];
+  const sessions = authorToSessions[getAuthorId(author)];
+  if (sessions) {
     for (const assignedSession of sessions) {
       if (
         session.session_group === assignedSession.session_group &&

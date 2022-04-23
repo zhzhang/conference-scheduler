@@ -1,20 +1,25 @@
 import { add, formatISO9075 } from "date-fns";
 import yaml from "js-yaml";
 import _ from "lodash";
-import { Session } from "./store";
+import { Author, Session } from "./store";
 
-type ParallelSession = {
+type OutputPaper = {
+  id: string;
   title: string;
+  abstract: string;
+  authors: Array<Author>;
+  attributes: Object;
   start_time: string;
   end_time: string;
 };
 
 type OutputSession = {
   title: string;
+  start_time: string;
+  end_time: string;
+  papers?: Array<OutputPaper>;
   chair?: string;
   location?: string;
-  start_time: Date;
-  end_time: Date;
 };
 
 function convertToOutputSession(
@@ -22,7 +27,7 @@ function convertToOutputSession(
   sessionToAssignments,
   papers
 ): OutputSession {
-  const output = {
+  const output: OutputSession = {
     title: session.name,
     chair: session.chair,
     location: session.location,
@@ -37,12 +42,9 @@ function convertToOutputSession(
       const paper = papers[assignment.paper_id];
       const end = add(start, { minutes: assignment.minutes });
       output.papers.push({
-        id: assignment.paper_id,
-        start_time: formatISO9075(start),
-        end_time: formatISO9075(end),
-        title: paper.title,
-        authors: paper.authors,
-        attributes: paper.attributes,
+        ...paper,
+        start_time: session.poster ? output.start_time : formatISO9075(start),
+        end_time: session.poster ? output.end_time : formatISO9075(end),
       });
       start = end;
     }

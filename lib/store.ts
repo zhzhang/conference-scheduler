@@ -21,11 +21,11 @@ export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-type Author = {
+export interface Author {
   first_name: string;
   middle_name: string;
   last_name: string;
-};
+}
 
 export interface Paper {
   id: string;
@@ -39,6 +39,8 @@ export interface Session {
   id: string;
   name: string;
   paperIds: Array<string>;
+  poster: boolean;
+  no_paper: boolean;
   location?: string;
   chair?: string;
   session_group?: string;

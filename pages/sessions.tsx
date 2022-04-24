@@ -1,4 +1,12 @@
+import SessionCard from "@/components/SessionCard";
 import exportToYaml from "@/lib/export";
+import {
+  addSession,
+  AuthorToSessions,
+  PapersMap,
+  SessionsMap,
+  SessionToAssignments,
+} from "@/lib/store";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import FormControl from "@mui/material/FormControl";
@@ -10,16 +18,17 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import _ from "lodash";
 import { useState } from "react";
-import SessionCard from "../components/SessionCard";
-import { addSession } from "../lib/store";
 
 export default function SessionList({
   sessions,
   papers,
-  assignments,
-  locations,
   sessionToAssignments,
   authorToSessions,
+}: {
+  sessions: SessionsMap;
+  papers: PapersMap;
+  sessionToAssignments: SessionToAssignments;
+  authorToSessions: AuthorToSessions;
 }) {
   const [name, setName] = useState("");
   const [orderBy, setOrderBy] = useState("None");
@@ -104,7 +113,6 @@ export default function SessionList({
             <Grid item md={6} key={session.id}>
               <SessionCard
                 session={session}
-                locations={locations}
                 papers={papers}
                 assignments={sessionToAssignments[session.id]}
                 authorToSessions={authorToSessions}

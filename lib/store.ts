@@ -32,8 +32,10 @@ export interface Paper {
   title: string;
   abstract: string;
   authors: Array<Author>;
-  attributes: Object;
+  attributes: { [name: string]: string };
 }
+
+export type PapersMap = { [id: string]: Paper };
 
 export interface Session {
   id: string;
@@ -48,12 +50,18 @@ export interface Session {
   end_time?: Date;
 }
 
-export interface UpdateSessionParams {
-  name?: string;
-  location?: string;
-  start?: Date;
-  end?: Date;
+export type SessionsMap = { [id: string]: Session };
+
+export interface Assignment {
+  id: string;
+  paper_id: string;
+  session_id: string;
+  minute: number;
+  slot_number: number;
 }
+
+export type AuthorToSessions = { [id: string]: Array<Session> };
+export type SessionToAssignments = { [id: string]: Array<Assignment> };
 
 export enum Direction {
   UP,
@@ -64,10 +72,10 @@ export enum Direction {
  * @param {number} channelId the currently selected Channel
  */
 export const useStore = (props?) => {
-  const [papers, setPapers] = useState({});
   const [loading, setLoading] = useState(true);
-  const [sessions, setSessions] = useState({});
-  const [assignments, setAssignments] = useState([]);
+  const [papers, setPapers] = useState<PapersMap>({});
+  const [sessions, setSessions] = useState<SessionsMap>({});
+  const [assignments, setAssignments] = useState<Array<Assignment>>([]);
   const [newSession, handleNewSession] = useState();
   const [updateSession, handleUpdateSession] = useState();
   const [deleteSession, handleDeleteSession] = useState();
@@ -306,9 +314,9 @@ export const deletePaper = async (id: String) => {
   }
 };
 
-export const addSession = async (session: Session) => {
+export const addSession = async ({ name }: { name: string }) => {
   try {
-    let { body } = await supabase.from("sessions").insert(session);
+    let { body } = await supabase.from("sessions").insert({ name });
     return body;
   } catch (error) {
     console.log("error", error);
@@ -324,9 +332,12 @@ export const deleteSession = async (id: String) => {
   }
 };
 
-export const updateSession = async (id, params: UpdateSessionParams) => {
+export const updateSession = async (session: Session) => {
   try {
-    let { body } = await supabase.from("sessions").update(params).match({ id });
+    let { body } = await supabase
+      .from("sessions")
+      .update(session)
+      .match({ id: session.id });
     return body;
   } catch (error) {
     console.log("error", error);

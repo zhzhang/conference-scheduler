@@ -1,3 +1,11 @@
+import DeleteSessionDialog from "@/components/DeleteSessionDialog";
+import {
+  Assignment,
+  AuthorToSessions,
+  getAuthorId,
+  PapersMap,
+  Session,
+} from "@/lib/store";
 import ErrorIcon from "@mui/icons-material/Error";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -7,8 +15,6 @@ import Typography from "@mui/material/Typography";
 import { differenceInMinutes, format } from "date-fns";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { getAuthorId, Session } from "../lib/store";
-import DeleteSessionDialog from "./DeleteSessionDialog";
 
 function formatDate(start: Date, end: Date): string {
   return `${format(new Date(start), "iii, MMM do H:mm")} - ${format(
@@ -19,7 +25,7 @@ function formatDate(start: Date, end: Date): string {
 
 function ConflictPopover({ open }) {
   const [anchorEl, setAnchorEl] = useState(null);
-  const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
+  const handlePopoverOpen = (event: React.MouseEvent<SVGSVGElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handlePopoverClose = () => {
@@ -66,11 +72,13 @@ function ConflictPopover({ open }) {
 export default function SessionCard({
   session,
   papers,
-  locations,
   authorToSessions,
   assignments = [],
 }: {
   session: Session;
+  papers: PapersMap;
+  authorToSessions: AuthorToSessions;
+  assignments: Array<Assignment>;
 }) {
   const router = useRouter();
   const { id, name, start_time, end_time, no_paper, location, session_group } =

@@ -108,7 +108,6 @@ function FilteredPapers({ papers, sessions, sessionToAssignments }) {
               key={paper.id}
               paper={paper}
               selected={selection.includes(paper)}
-              setSelection={setSelection}
               onSelect={(paper) => setSelection([...selection, paper])}
               onDeselect={(paper) =>
                 setSelection(selection.filter((p) => p !== paper))

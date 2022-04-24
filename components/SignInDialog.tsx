@@ -1,6 +1,7 @@
 // Taken from:
 // https://github.com/mui/material-ui/blob/82f2a3fc40c458213df450c178855168b7c6de17/docs/data/material/getting-started/templates/sign-in/SignIn.tsx
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import { AlertColor } from "@mui/material";
 import Alert from "@mui/material/Alert";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
@@ -12,7 +13,7 @@ import { useState } from "react";
 import { supabase } from "../lib/store";
 
 export default function SignInDialog({ open, onClose }) {
-  const [message, setMessage] = useState();
+  const [message, setMessage] = useState<{ type: AlertColor; body: string }>();
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -23,7 +24,7 @@ export default function SignInDialog({ open, onClose }) {
     );
     const { error } = await supabase.auth.signIn(
       {
-        email: data.get("email"),
+        email: data.get("email").toString(),
       },
       {
         redirectTo:

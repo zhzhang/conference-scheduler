@@ -7,12 +7,17 @@ import IconButton from "@mui/material/IconButton";
 import MuiPaper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
+import { MUIStyledCommonProps } from "@mui/system";
 import { useState } from "react";
 import { deletePaper, Paper, renderAuthorName } from "../lib/store";
 
-const StyledPaper = styled(MuiPaper, {
+interface SelectableStyledPaperProps extends MUIStyledCommonProps {
+  selected: boolean;
+}
+
+const SelectableStyledPaper = styled(MuiPaper, {
   shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, selected }) => ({
+})(({ theme, selected }: SelectableStyledPaperProps) => ({
   borderWidth: selected ? 3 : 1,
   borderStyle: "solid",
   borderColor: selected ? theme.palette.primary.main : theme.palette.divider,
@@ -53,6 +58,8 @@ export default function PaperCard({
 }: {
   paper: Paper;
   selected: boolean;
+  onSelect: (paper: Paper) => void;
+  onDeselect: (paper: Paper) => void;
 }) {
   const { id, title, abstract, authors, attributes } = paper;
   const [showAbstract, setShowAbstract] = useState(false);
@@ -65,7 +72,7 @@ export default function PaperCard({
     }
   };
   return (
-    <StyledPaper
+    <SelectableStyledPaper
       sx={{ mt: 1 }}
       elevation={0}
       selected={selected}
@@ -114,6 +121,6 @@ export default function PaperCard({
         </Box>
         {showAbstract && <Typography>{abstract}</Typography>}
       </Box>
-    </StyledPaper>
+    </SelectableStyledPaper>
   );
 }

@@ -220,7 +220,8 @@ function SessionDetails({ session, locations, chairs, sessionGroups }) {
           <Button
             disabled={!changed}
             onClick={() =>
-              updateSession(session.id, {
+              updateSession({
+                ...session,
                 name,
                 location,
                 chair,
@@ -252,7 +253,7 @@ function IconButton({ Icon, onClick, sx = null }) {
 
 function ConflictPopover({ authors, session, authorToSessions }) {
   const [anchorEl, setAnchorEl] = useState(null);
-  const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
+  const handlePopoverOpen = (event: React.MouseEvent<SVGSVGElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handlePopoverClose = () => {

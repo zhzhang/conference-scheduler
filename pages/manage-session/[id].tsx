@@ -1,4 +1,18 @@
 import AddPapersDialog from "@/components/AddPapersDialog";
+import {
+  Assignment,
+  AuthorToSessions,
+  deleteAssignment,
+  Direction,
+  getAuthorId,
+  PapersMap,
+  renderAuthorName,
+  reorderAssignment,
+  Session,
+  setPresentationLength,
+  Store,
+  updateSession,
+} from "@/lib/store";
 import AddIcon from "@mui/icons-material/Add";
 import DownIcon from "@mui/icons-material/ArrowDropDown";
 import UpIcon from "@mui/icons-material/ArrowDropUp";
@@ -18,20 +32,10 @@ import MuiIconButton from "@mui/material/IconButton";
 import Popover from "@mui/material/Popover";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { formatISO } from "date-fns";
 import _ from "lodash";
-import * as moment from "moment";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import {
-  deleteAssignment,
-  Direction,
-  getAuthorId,
-  Paper,
-  renderAuthorName,
-  reorderAssignment,
-  setPresentationLength,
-  updateSession,
-} from "../../lib/store";
 
 const filter = createFilterOptions();
 
@@ -178,7 +182,7 @@ function SessionDetails({ session, locations, chairs, sessionGroups }) {
             label="Starts"
             onChange={(newValue) => {
               if (newValue) {
-                setStart(moment(newValue).format("YYYY-MM-DDTHH:mm:ss"));
+                setStart(formatISO(new Date(newValue)));
               }
             }}
             renderInput={(params) => <TextField fullWidth {...params} />}
@@ -191,7 +195,7 @@ function SessionDetails({ session, locations, chairs, sessionGroups }) {
             label="Ends"
             onChange={(newValue) => {
               if (newValue) {
-                setEnd(moment(newValue).format("YYYY-MM-DDTHH:mm:ss"));
+                setEnd(formatISO(new Date(newValue)));
               }
             }}
             renderInput={(params) => <TextField fullWidth {...params} />}
@@ -323,7 +327,11 @@ function PaperEntry({
   papers,
   authorToSessions,
 }: {
-  paper: Paper;
+  session: Session;
+  papers: PapersMap;
+  assignment: Assignment;
+  assignments: Array<Assignment>;
+  authorToSessions: AuthorToSessions;
 }) {
   const [removeDialogOpen, toggleRemoveDialogOpen] = useState(false);
   const paper = papers[assignment.paper_id];
@@ -482,9 +490,12 @@ function ManageSession({
   );
 }
 
-export default function ManageSessionRoot({ ...props }) {
+export default function ManageSessionRoot({ ...props }: Store) {
   const { sessions } = props;
   const router = useRouter();
+  if (typeof router.query.id != "string") {
+    return null;
+  }
   const session = sessions[router.query.id];
   if (!session) {
     return null;

@@ -11,7 +11,6 @@ export default function AddPapersDialog({
   open,
   session,
   sessions,
-  assignments,
   papers,
   paperToAssignments,
   onBlur,

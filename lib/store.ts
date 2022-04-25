@@ -174,16 +174,22 @@ export const useStore = (props?) => {
   const chairs = [];
   const sessionGroups = [];
   for (const session of Object.values(sessions)) {
-    if (session.location) {
+    if (session.location && !locations.includes(session.location)) {
       locations.push(session.location);
     }
-    if (session.chair) {
+    if (session.chair && !chairs.includes(session.chair)) {
       chairs.push(session.chair);
     }
-    if (session.session_group) {
+    if (
+      session.session_group &&
+      !sessionGroups.includes(session.session_group)
+    ) {
       sessionGroups.push(session.session_group);
     }
   }
+  locations.sort();
+  chairs.sort();
+  sessionGroups.sort();
 
   const attributeValues = {};
   for (const paper of Object.values(papers)) {

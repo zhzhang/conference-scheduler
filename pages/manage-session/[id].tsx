@@ -221,7 +221,7 @@ function SessionDetails({ session, locations, chairs, sessionGroups }) {
             disabled={!changed}
             onClick={() =>
               updateSession({
-                ...session,
+                id: session.id,
                 name,
                 location,
                 chair,

@@ -72,12 +72,12 @@ function ConflictPopover({ open }) {
 export default function SessionCard({
   session,
   papers,
-  authorToSessions,
+  presenterToSessions,
   assignments = [],
 }: {
   session: Session;
   papers: PapersMap;
-  authorToSessions: AuthorToSessions;
+  presenterToSessions: AuthorToSessions;
   assignments: Array<Assignment>;
 }) {
   const router = useRouter();
@@ -99,8 +99,7 @@ export default function SessionCard({
       if (!paper) {
         continue;
       }
-      const author = paper.authors[0];
-      const sessions = authorToSessions[getAuthorId(author)];
+      const sessions = presenterToSessions[getAuthorId(assignment.presenter)];
       if (sessions) {
         for (let otherSession of sessions) {
           if (

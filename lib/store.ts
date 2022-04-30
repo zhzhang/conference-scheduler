@@ -58,6 +58,7 @@ export interface Assignment {
   session_id: string;
   minutes: number;
   slot_number: number;
+  presenter: Author;
 }
 
 export type AuthorToSessions = { [id: string]: Array<Session> };
@@ -72,7 +73,7 @@ export type Store = {
   sessionGroups: Array<string>;
   paperToAssignments: { [id: string]: Array<Assignment> };
   sessionToAssignments: { [id: string]: Array<Assignment> };
-  authorToSessions: { [id: string]: Array<Session> };
+  presenterToSessions: { [id: string]: Array<Session> };
 };
 
 export enum Direction {
@@ -216,7 +217,7 @@ export const useStore = (props?) => {
     });
   }
 
-  const authorToSessions = {};
+  const presenterToSessions = {};
   for (const session of Object.values(sessions)) {
     if (session.session_group) {
       const assignments = sessionToAssignments[session.id];
@@ -228,14 +229,13 @@ export const useStore = (props?) => {
         if (!paper) {
           continue;
         }
-        const author = paper.authors[0];
-        const authorId = getAuthorId(author);
-        if (authorId in authorToSessions) {
-          if (!authorToSessions[authorId].includes(session)) {
-            authorToSessions[authorId].push(session);
+        const presenterId = getAuthorId(assignment.presenter);
+        if (presenterId in presenterToSessions) {
+          if (!presenterToSessions[presenterId].includes(session)) {
+            presenterToSessions[presenterId].push(session);
           }
         } else {
-          authorToSessions[authorId] = [session];
+          presenterToSessions[presenterId] = [session];
         }
       }
     }
@@ -250,7 +250,7 @@ export const useStore = (props?) => {
     sessionGroups,
     paperToAssignments,
     sessionToAssignments,
-    authorToSessions,
+    presenterToSessions,
   };
 };
 
@@ -384,6 +384,7 @@ export const assignPapers = async (papers, session) => {
         id: `${paper.id}-${session.id}`,
         paper_id: paper.id,
         session_id: session.id,
+        presenter: paper.authors[0],
       }))
     );
     return body;
@@ -417,6 +418,20 @@ export const reorderAssignment = async (
     const { body } = await supabase
       .from("assignments")
       .upsert(orderedAssignments);
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+export const setPresenter = async (id: String, presenter: Author) => {
+  try {
+    let { body } = await supabase
+      .from("assignments")
+      .update({
+        presenter,
+      })
+      .match({ id });
+    return body;
   } catch (error) {
     console.log("error", error);
   }

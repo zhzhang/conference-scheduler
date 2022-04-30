@@ -78,6 +78,7 @@ CREATE TABLE IF NOT EXISTS assignments (
     paper_id VARCHAR(128) REFERENCES papers ON DELETE CASCADE NOT NULL,
     session_id UUID REFERENCES sessions ON DELETE CASCADE NOT NULL,
     minutes SMALLINT NOT NULL DEFAULT 15,
+    presenter JSON NOT NULL,
     slot_number SMALLSERIAL NOT NULL
 );
 

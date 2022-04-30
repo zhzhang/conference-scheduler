@@ -23,12 +23,12 @@ export default function SessionList({
   sessions,
   papers,
   sessionToAssignments,
-  authorToSessions,
+  presenterToSessions,
 }: {
   sessions: SessionsMap;
   papers: PapersMap;
   sessionToAssignments: SessionToAssignments;
-  authorToSessions: AuthorToSessions;
+  presenterToSessions: AuthorToSessions;
 }) {
   const [name, setName] = useState("");
   const [orderBy, setOrderBy] = useState("None");
@@ -68,29 +68,7 @@ export default function SessionList({
         </Button>
       </Box>
       <Box sx={{ display: "flex" }}>
-        <TextField
-          id="name"
-          label="New Session Name"
-          variant="outlined"
-          fullWidth
-          value={name}
-          onChange={handleChange}
-          sx={{ mt: 1 }}
-        />
-        <Button
-          disabled={name.length === 0}
-          onClick={async () => {
-            await addSession({
-              name,
-            });
-            setName("");
-          }}
-        >
-          Add Session
-        </Button>
-      </Box>
-      <Box sx={{ width: 300, mt: 2 }}>
-        <FormControl fullWidth>
+        <FormControl fullWidth sx={{ width: 250, mr: 1 }}>
           <InputLabel id="demo-simple-select-label">Sort By</InputLabel>
           <Select
             value={orderBy}
@@ -106,8 +84,27 @@ export default function SessionList({
             ))}
           </Select>
         </FormControl>
+        <TextField
+          id="name"
+          label="New Session Name"
+          variant="outlined"
+          fullWidth
+          value={name}
+          onChange={handleChange}
+        />
+        <Button
+          disabled={name.length === 0}
+          onClick={async () => {
+            await addSession({
+              name,
+            });
+            setName("");
+          }}
+        >
+          Add Session
+        </Button>
       </Box>
-      <Box sx={{ height: "calc(100vh - 205px)", overflowY: "scroll", pr: 2 }}>
+      <Box sx={{ height: "calc(100vh - 130px)", overflowY: "scroll", pr: 2 }}>
         <Grid container spacing={2}>
           {orderedSessions.map((session) => (
             <Grid item md={6} key={session.id}>
@@ -115,7 +112,7 @@ export default function SessionList({
                 session={session}
                 papers={papers}
                 assignments={sessionToAssignments[session.id]}
-                authorToSessions={authorToSessions}
+                presenterToSessions={presenterToSessions}
               />
             </Grid>
           ))}

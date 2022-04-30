@@ -10,6 +10,7 @@ import {
   reorderAssignment,
   Session,
   setPresentationLength,
+  setPresenter,
   Store,
   updateSession,
 } from "@/lib/store";
@@ -26,10 +27,13 @@ import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import Chip from "@mui/material/Chip";
 import Dialog from "@mui/material/Dialog";
+import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
 import MuiIconButton from "@mui/material/IconButton";
+import MenuItem from "@mui/material/MenuItem";
 import Popover from "@mui/material/Popover";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { formatISO } from "date-fns";
@@ -255,7 +259,7 @@ function IconButton({ Icon, onClick, sx = null }) {
   );
 }
 
-function ConflictPopover({ authors, session, authorToSessions }) {
+function ConflictPopover({ presenter, session, presenterToSessions }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const handlePopoverOpen = (event: React.MouseEvent<SVGSVGElement>) => {
     setAnchorEl(event.currentTarget);
@@ -267,8 +271,7 @@ function ConflictPopover({ authors, session, authorToSessions }) {
   const open = Boolean(anchorEl);
 
   const conflicts = [];
-  const author = authors[0];
-  const sessions = authorToSessions[getAuthorId(author)];
+  const sessions = presenterToSessions[getAuthorId(presenter)];
   if (sessions) {
     for (const assignedSession of sessions) {
       if (
@@ -276,7 +279,9 @@ function ConflictPopover({ authors, session, authorToSessions }) {
         session.id !== assignedSession.id
       ) {
         conflicts.push(
-          `${author.first_name} ${author.last_name} has another paper assigned to ${assignedSession.name} in the same parallel session, ${session.session_group}`
+          `${renderAuthorName(presenter)} has another paper assigned to ${
+            assignedSession.name
+          } in the same parallel session, ${session.session_group}`
         );
       }
     }
@@ -325,13 +330,13 @@ function PaperEntry({
   assignment,
   assignments,
   papers,
-  authorToSessions,
+  presenterToSessions,
 }: {
   session: Session;
   papers: PapersMap;
   assignment: Assignment;
   assignments: Array<Assignment>;
-  authorToSessions: AuthorToSessions;
+  presenterToSessions: AuthorToSessions;
 }) {
   const [removeDialogOpen, toggleRemoveDialogOpen] = useState(false);
   const paper = papers[assignment.paper_id];
@@ -418,11 +423,31 @@ function PaperEntry({
           </Box>
         </Box>
         <Box display="flex">
+          <Chip label="Presenter" variant="outlined" sx={{ mr: 0.5 }} />
+          <FormControl variant="standard" sx={{ minWidth: 120 }}>
+            <Select
+              labelId="demo-simple-select-standard-label"
+              id="demo-simple-select-standard"
+              label="Age"
+              value={assignment.presenter}
+              renderValue={(author) => renderAuthorName(author)}
+              onChange={(event: SelectChangeEvent) => {
+                console.log(event.target.value);
+                setPresenter(assignment.id, event.target.value);
+              }}
+            >
+              {paper.authors.map((author) => (
+                <MenuItem key={getAuthorId(author)} value={author}>
+                  {renderAuthorName(author)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           {session.session_group && (
             <ConflictPopover
-              authorToSessions={authorToSessions}
+              presenterToSessions={presenterToSessions}
               session={session}
-              authors={paper.authors}
+              presenter={assignment.presenter}
             />
           )}
           {Object.entries(paper.attributes).map(([key, value]) => (
@@ -430,7 +455,7 @@ function PaperEntry({
               key={key}
               label={`${key}: ${value}`}
               variant="outlined"
-              sx={{ mr: 0.5 }}
+              sx={{ ml: 0.5 }}
             />
           ))}
         </Box>
@@ -444,7 +469,7 @@ function ManageSession({
   papers,
   paperToAssignments,
   sessionToAssignments,
-  authorToSessions,
+  presenterToSessions,
   sessions,
   sessionGroups,
   locations,
@@ -472,7 +497,7 @@ function ManageSession({
               assignments={assignments}
               assignment={assignment}
               papers={papers}
-              authorToSessions={authorToSessions}
+              presenterToSessions={presenterToSessions}
             />
           ))}
           <AddPapersDialog

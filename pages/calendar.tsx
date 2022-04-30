@@ -7,11 +7,16 @@ import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { Session, SessionsMap } from "../lib/store";
 
+const locales = {
+  "en-US": require("date-fns/locale/en-US"),
+};
+
 const localizer = dateFnsLocalizer({
   format,
   parse,
   startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }),
   getDay,
+  locales,
 });
 
 function getEarliestDay(sessions: Array<Session>): Date | undefined {

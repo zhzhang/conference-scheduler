@@ -1,11 +1,13 @@
+import PaperTitlePopover, {
+  getAuthorName,
+} from "@/components/PaperTitlePopover";
+import { assignPapers } from "@/lib/store";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import Typography from "@mui/material/Typography";
 import { DataGrid } from "@mui/x-data-grid";
 import { useState } from "react";
-import { assignPapers } from "../lib/store";
-import PaperTitlePopover, { getAuthorName } from "./PaperTitlePopover";
 
 export default function AddPapersDialog({
   open,

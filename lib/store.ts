@@ -56,12 +56,24 @@ export interface Assignment {
   id: string;
   paper_id: string;
   session_id: string;
-  minute: number;
+  minutes: number;
   slot_number: number;
 }
 
 export type AuthorToSessions = { [id: string]: Array<Session> };
 export type SessionToAssignments = { [id: string]: Array<Assignment> };
+
+export type Store = {
+  papers: PapersMap;
+  attributeValues: { [name: string]: Array<string> };
+  sessions: SessionsMap;
+  locations: Array<string>;
+  chairs: Array<string>;
+  sessionGroups: Array<string>;
+  paperToAssignments: { [id: string]: Array<Assignment> };
+  sessionToAssignments: { [id: string]: Array<Assignment> };
+  authorToSessions: { [id: string]: Array<Session> };
+};
 
 export enum Direction {
   UP,

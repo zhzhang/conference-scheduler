@@ -1,15 +1,25 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import moment from "moment";
+import { format, getDay, parse, startOfWeek } from "date-fns";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { Calendar, momentLocalizer } from "react-big-calendar";
+import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { Session } from "../lib/store";
+import { Session, SessionsMap } from "../lib/store";
 
-const localizer = momentLocalizer(moment);
+const locales = {
+  "en-US": require("date-fns/locale/en-US"),
+};
 
-function getEarliestDay(sessions: Array<Session>): string | undefined {
+const localizer = dateFnsLocalizer({
+  format,
+  parse,
+  startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }),
+  getDay,
+  locales,
+});
+
+function getEarliestDay(sessions: Array<Session>): Date | undefined {
   if (sessions.length === 0) {
     return undefined;
   }
@@ -26,11 +36,11 @@ function getEarliestDay(sessions: Array<Session>): string | undefined {
   return earliest;
 }
 
-export default function Days({ sessions }) {
+export default function Days({ sessions }: { sessions: SessionsMap }) {
   const router = useRouter();
   const sessionList = Object.values(sessions);
   const calendarEvents = [];
-  const [date, setDate] = useState();
+  const [date, setDate] = useState<Date | undefined>();
   for (let session of sessionList) {
     if (session.start_time && session.end_time) {
       calendarEvents.push({

@@ -99,10 +99,15 @@ function SessionDetails({ session, locations, chairs, sessionGroups }) {
                 (option) => inputValue === option
               );
               if (inputValue !== "" && !isExisting) {
-                filtered.push(inputValue);
+                filtered.unshift(inputValue);
               }
               return filtered;
             }}
+            renderOption={(props, option) => (
+              <li {...props}>
+                {locations.includes(option) ? option : `Add "${option}"`}
+              </li>
+            )}
             clearOnBlur={false}
             options={locations}
             onChange={(_event, location) => {
@@ -131,10 +136,15 @@ function SessionDetails({ session, locations, chairs, sessionGroups }) {
                 (option) => inputValue === option
               );
               if (inputValue !== "" && !isExisting) {
-                filtered.push(inputValue);
+                filtered.unshift(inputValue);
               }
               return filtered;
             }}
+            renderOption={(props, option) => (
+              <li {...props}>
+                {chairs.includes(option) ? option : `Add "${option}"`}
+              </li>
+            )}
             clearOnBlur={false}
             options={chairs}
             onChange={(_event, chair) => {
@@ -163,10 +173,15 @@ function SessionDetails({ session, locations, chairs, sessionGroups }) {
                 (option) => inputValue === option
               );
               if (inputValue !== "" && !isExisting) {
-                filtered.push(inputValue);
+                filtered.unshift(inputValue);
               }
               return filtered;
             }}
+            renderOption={(props, option) => (
+              <li {...props}>
+                {sessionGroups.includes(option) ? option : `Add "${option}"`}
+              </li>
+            )}
             clearOnBlur={false}
             options={sessionGroups}
             onChange={(_event, sessionGroup) => {
